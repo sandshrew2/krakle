@@ -1,17 +1,35 @@
 document.addEventListener("DOMContentLoaded", () => {
     createSquares();
 
+    theMovieDb.common.api_key = "3ba2e8da73270c632742baee65e499a2";
     let answer = {title: "Title", id: 0, year: 1999, season: "Season", episodes: 13, category: "Category"};
 
     let tries = 0;
 
+    var submit = document.getElementById('submit-button');
+    var search = document.getElementById('search-button');
     var form = document.getElementById('input-form');
-if (form.attachEvent) {
-    form.attachEvent("submit", submitGuess);
-} else {
-    form.addEventListener("submit", submitGuess);
-}
 
+    if (form.attachEvent) {
+        submit.attachEvent("click", submitGuess);
+        search.attachEvent("click", searchTitle);
+    } else {
+        submit.addEventListener("click", submitGuess);
+        search.addEventListener("click", searchTitle);
+    }
+
+
+    var titles = [];
+
+    //var gInput = document.getElementById('guess-input');
+
+    //gInput.addEventListener("keydown", startSearch);
+    //gInput.addEventListener("keyup",searchTitle);
+
+    //function startSearch() {
+    //    gInput.addEventListener("keyup",searchTitle);
+    //    gInput.removeEventListener("keydown", startSearch);
+    //}
     function createSquares() {
         const gameBoard = document.getElementById("board");
 
@@ -123,4 +141,22 @@ if (form.attachEvent) {
         }
         else return 5;
     }
+
+    function searchTitle (e) {
+        if (e.preventDefault) e.preventDefault();
+        
+        let sInput = document.getElementById("guess-input").value;
+        theMovieDb.search.getMovie({"query":encodeURI(sInput)},successCB,errorCB);
+        //gInput.removeEventListener("keyup",searchTitle);
+        return false;
+    }
+
+    function successCB(data) {
+        console.log("Success callback: " + data);
+    };
+            
+    function errorCB(data) {
+        console.log("Error callback: " + data);
+    };
+    
 })
