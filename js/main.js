@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let answer = {title: "Title", id: 0, year: 1999, season: "Season", episodes: 13, category: "Category"};
 
+    let tries = 0;
+
     var form = document.getElementById('input-form');
 if (form.attachEvent) {
     form.attachEvent("submit", submitGuess);
@@ -41,14 +43,38 @@ if (form.attachEvent) {
 
     function processAnswer(guess) {
         console.warn(guess);
-        if (guess == answer[1]) console.warn("Correct Answer. Title is: " + answer.title);
-        else {
-            let guessData = getData(guess);
-            if (guessData.year == answer.year) console.warn("Correct Year! " + guessData.year + "/" + answer.year);
-            if (guessData.season == answer.season) console.warn("Correct Season! " + guessData.season + "/" + answer.season);
-            if (guessData.episodes == answer.episodes) console.warn("Correct Episodes! " + guessData.episodes + "/" + answer.episodes);
-            if (guessData.category == answer.category) console.warn("Correct Category! " + guessData.category + "/" + answer.category);
+        if (guess == answer.title) {
+            console.warn("Correct Answer. Title is: " + answer.title);
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById((5*tries)+i).textContent = "=";    
+            }
         }
+        else {
+            document.getElementById((5*tries)+1).textContent = "¬";
+            let guessData = getData(guess);
+            let resArray = compareData(guessData,answer);
+            for(let i=0;i<resArray.length;i++) {
+                let fill = "";
+                switch (resArray[i]) {
+                    case 0:
+                        fill = "¬";
+                        break;
+                    case 1:
+                        fill = "=";
+                        break;
+                    case 2:
+                        fill = ">";
+                        break;
+                    case 3:
+                        fill = "<";
+                        break;
+                    default:
+                        console.warn ("Error: " + i + "=" + resArray[i]);
+                }
+                document.getElementById((5*tries)+i+2).textContent = fill;
+            }
+        }
+        tries = tries+1;
     }
     
     function getData(guess) {
@@ -75,5 +101,26 @@ if (form.attachEvent) {
             data.category = "Other";
         }
         return data;
+    }
+
+    function compareData (data1, data2) {
+        let result = [compare(data1.year,data2.year),compare(data1.season,data2.season),compare(data1.episodes,data2.episodes),compare(data1.category,data2.category)];
+        return result;
+    }
+
+    function compare (param1, param2) {
+        if (typeof param1 === typeof param2) {
+            if (typeof param1 === 'number') {
+                if (param1 == param2) return 1;
+                else if (param1 > param2) return 2;
+                else if(param1 < param2) return 3;
+                else return 4;
+            }
+            else {
+                if (param1 == param2) return 1;
+                else return 0;
+            }
+        }
+        else return 5;
     }
 })
